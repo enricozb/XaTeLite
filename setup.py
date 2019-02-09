@@ -9,7 +9,7 @@ requirements = ['flask']
 setup(
     name='xatelite',
     packages=['xatelite'],
-    version='0.1.1',
+    version='0.1.2',
     description='A Python3 LaTeX over SSH/HTTP service',
     long_description=long_description,
     author='Enrico Borba',

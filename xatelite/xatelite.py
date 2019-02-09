@@ -44,8 +44,10 @@ def get_root_dir(tex_file):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("latex_file",
-                        help="the latex file to be compiled and served")
+    parser.add_argument("-f", "--latex_file",
+                        help="the latex file to be compiled and served. If "
+                        "this is not passed in, the single *.tex file in the "
+                        "working directory will be used.")
     parser.add_argument("-p", "--port",
                         default=5000,
                         help="specify which port the webserver will run on")
@@ -55,11 +57,26 @@ def parse_args():
     parser.add_argument("-qq", "--qquiet",
                         action="store_true",
                         help="suppress all output including running message")
-    return parser.parse_args()
+    return parser, parser.parse_args()
 
 
 def main():
-    args = parse_args()
+    parser, args = parse_args()
+
+    if args.latex_file is None:
+        files = [f for f in os.listdir('.') if os.path.isfile(f)]
+        tex_files = [f for f in files if splitext(f)[1] == ".tex"]
+        if len(tex_files) == 1:
+            args.latex_file = tex_files[0]
+
+        if len(tex_files) > 1:
+            tex_files = "\n\t".join(tex_files)
+            parser.error(f"too many .tex files in directory:\n\t{tex_files}")
+            exit(1)
+
+        if len(tex_files) == 0:
+            parser.error("no .tex files found")
+            exit(1)
 
     if args.qquiet:
         args.quiet = True
